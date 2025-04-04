@@ -1,66 +1,93 @@
-DocEase
-Setup & Run Instructions
-Prerequisites
-Install Node.js (Ignore if already installed)
-Install MongoDB
-Create an account on Cloudinary
-(Optional) Create an account on Stripe for payments
-(Optional) Create an account on Razorpay for payments
-Backend Setup
-Open the project folder in VS Code.
+# DocEase
 
-Open the integrated terminal.
+## Setup & Run Instructions
 
-Navigate to the backend folder:
+### Prerequisites
+- Install [Node.js](https://nodejs.org/en/download/) (Ignore if already installed)
+- Install [MongoDB](https://www.mongodb.com/)
+- Create an account on [Cloudinary](https://cloudinary.com/)
+- (Optional) Create an account on [Stripe](https://stripe.com/) for payments
+- (Optional) Create an account on [Razorpay](https://razorpay.com/) for payments
 
-cd backend
-Install dependencies:
+---
 
-npm install
-Setup Cloudinary:
+## Backend Setup
 
-Create an account at Cloudinary
-Copy Cloud Name, API Key, and API Secret from the dashboard
-Add these values to the .env file in the backend folder
-Setup MongoDB:
+1. Open the project folder in VS Code.
+2. Open the integrated terminal.
+3. Navigate to the `backend` folder:
+   ```sh
+   cd backend
+   ```
+4. Install dependencies:
+   ```sh
+   npm install
+   ```
+5. **Setup Cloudinary:**
+   - Create an account at [Cloudinary](https://cloudinary.com/)
+   - Copy `Cloud Name`, `API Key`, and `API Secret` from the dashboard
+   - Add these values to the `.env` file in the backend folder
 
-Create an account at MongoDB Atlas
-Create a new project and database
-Choose M0 free tier and select your region
-Set up a username and password (Avoid using @ in passwords)
-Whitelist IP 0.0.0.0/0
-Click on Connect > Select Compass > Copy the connection string
-Paste the connection string into the .env file and replace <password> with your actual password
-(Optional) Setup Stripe:
+6. **Setup MongoDB:**
+   - Create an account at [MongoDB Atlas](https://www.mongodb.com/)
+   - Create a new project and database
+   - Choose `M0` free tier and select your region
+   - Set up a username and password (Avoid using `@` in passwords)
+   - Whitelist IP `0.0.0.0/0`
+   - Click on `Connect` > Select `Compass` > Copy the connection string
+   - Paste the connection string into the `.env` file and replace `<password>` with your actual password
 
-Create an account at Stripe
-Get the Stripe Secret Key from the dashboard
-Add it to the .env file
-(Optional) Setup Razorpay:
+7. **(Optional) Setup Stripe:**
+   - Create an account at [Stripe](https://stripe.com/)
+   - Get the `Stripe Secret Key` from the dashboard
+   - Add it to the `.env` file
 
-Create an account at Razorpay
-Get Razorpay Secret Key and Key ID from the dashboard
-Add them to the .env file
-Start the backend server:
+8. **(Optional) Setup Razorpay:**
+   - Create an account at [Razorpay](https://razorpay.com/)
+   - Get `Razorpay Secret Key` and `Key ID` from the dashboard
+   - Add them to the `.env` file
 
-npm run server
-Frontend Setup
-Open the frontend folder in VS Code.
-Open the integrated terminal.
-Install dependencies:
-npm install
-Start the frontend:
-npm run dev
-Open http://localhost:5173 in your browser.
-Admin Panel Setup
-Open the admin folder in VS Code.
-Open the integrated terminal.
-Install dependencies:
-npm install
-Start the admin panel:
-npm run dev
-Open http://localhost:5174 in your browser.
-Troubleshooting
-If you face any issues, you can contact us on Instagram: @greatstackdev
+9. Start the backend server:
+   ```sh
+   npm run server
+   ```
 
-Find More Projects: GreatStack
+---
+
+## Frontend Setup
+
+1. Open the `frontend` folder in VS Code.
+2. Open the integrated terminal.
+3. Install dependencies:
+   ```sh
+   npm install
+   ```
+4. Start the frontend:
+   ```sh
+   npm run dev
+   ```
+5. Open `http://localhost:5173` in your browser.
+
+---
+
+## Admin Panel Setup
+
+1. Open the `admin` folder in VS Code.
+2. Open the integrated terminal.
+3. Install dependencies:
+   ```sh
+   npm install
+   ```
+4. Start the admin panel:
+   ```sh
+   npm run dev
+   ```
+5. Open `http://localhost:5174` in your browser.
+
+---
+
+## Troubleshooting
+If you face any issues, you can contact us on Instagram: [@greatstackdev](https://instagram.com/greatstackdev)
+
+Find More Projects: [GreatStack](https://greatstack.dev/source-code)
+
