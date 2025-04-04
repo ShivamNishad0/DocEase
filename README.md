@@ -85,9 +85,3 @@
 5. Open `http://localhost:5174` in your browser.
 
 ---
-
-## Troubleshooting
-If you face any issues, you can contact us on Instagram: [@greatstackdev](https://instagram.com/greatstackdev)
-
-Find More Projects: [GreatStack](https://greatstack.dev/source-code)
-
