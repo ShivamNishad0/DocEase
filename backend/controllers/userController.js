@@ -7,6 +7,7 @@ import appointmentModel from "../models/appointmentModel.js";
 import { v2 as cloudinary } from 'cloudinary'
 import stripe from "stripe";
 import razorpay from 'razorpay';
+import axios from 'axios';
 
 // Gateway Initialize
 const stripeInstance = new stripe(process.env.STRIPE_SECRET_KEY)
@@ -14,6 +15,115 @@ const razorpayInstance = new razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,
     key_secret: process.env.RAZORPAY_KEY_SECRET,
 })
+
+// Cashfree Config
+const CASHFREE_APP_ID = process.env.CASHFREE_APP_ID;
+const CASHFREE_SECRET_ID = process.env.CASHFREE_SECRET_ID;
+const CASHFREE_API_URL = process.env.CASHFREE_ENV === 'PROD' ? 'https://api.cashfree.com' : 'https://sandbox.cashfree.com'; // Use sandbox or production URL accordingly
+
+import crypto from 'crypto';
+
+// API to make payment of appointment using Cashfree
+const paymentCashfree = async (req, res) => {
+    try {
+        const { appointmentId } = req.body;
+        const appointmentData = await appointmentModel.findById(appointmentId);
+
+        if (!appointmentData || appointmentData.cancelled) {
+            return res.json({ success: false, message: 'Appointment Cancelled or not found' });
+        }
+
+        // Create order payload for Cashfree
+        const orderPayload = {
+            app_id: CASHFREE_APP_ID,
+            order_id: appointmentId,
+            order_amount: appointmentData.amount.toString(),
+            order_currency: process.env.CURRENCY,
+            customer_details: {
+                customer_email: appointmentData.userData.email || "customer@example.com",
+                customer_phone: appointmentData.userData.phone || "9999999999"
+            },
+            return_url: `${req.headers.origin}/verify-cashfree?appointmentId=${appointmentId}`,
+            notify_url: `${req.headers.origin}/api/payment-cashfree/notify`
+        };
+
+        // Prepare data string for signature as per Cashfree docs
+        // Flatten the payload for signature generation
+        const flattenPayload = {
+            app_id: orderPayload.app_id,
+            order_id: orderPayload.order_id,
+            order_amount: orderPayload.order_amount,
+            order_currency: orderPayload.order_currency,
+            customer_email: orderPayload.customer_details.customer_email,
+            customer_phone: orderPayload.customer_details.customer_phone,
+            return_url: orderPayload.return_url,
+            notify_url: orderPayload.notify_url
+        };
+
+        // Format: key1value1key2value2... sorted by key names
+        const dataToSign = Object.keys(flattenPayload)
+            .sort()
+            .map(key => `${key}${flattenPayload[key]}`)
+            .join('');
+
+        // Generate signature using HMAC SHA256 with secret key
+        const signature = crypto.createHmac('sha256', CASHFREE_SECRET_ID)
+            .update(dataToSign)
+            .digest('hex');
+
+        // Use sandbox or production URL based on environment variable
+        const apiUrl = process.env.CASHFREE_ENV === 'PROD' ? 'https://api.cashfree.com' : 'https://sandbox.cashfree.com';
+
+        // Send order creation request to Cashfree API with signature in headers
+        const response = await axios.post(`${apiUrl}/pg/orders`, orderPayload, {
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-version': '2022-01-01',
+                'x-client-id': CASHFREE_APP_ID,
+                'x-client-secret': CASHFREE_SECRET_ID,
+                'x-client-signature': signature
+            }
+        });
+
+        if (response.data.status === "OK") {
+            res.json({ success: true, order: response.data, paymentLink: response.data.payment_link });
+        } else {
+            res.json({ success: false, message: response.data.message || "Cashfree order creation failed" });
+        }
+
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+};
+
+// API to verify payment of Cashfree
+const verifyCashfree = async (req, res) => {
+    try {
+        const { orderId } = req.body;
+
+        // Fetch order status from Cashfree API (example endpoint)
+        const response = await axios.get(`${CASHFREE_API_URL}/api/v2/order/info/${orderId}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-version': '2022-01-01',
+                'x-client-id': CASHFREE_APP_ID,
+                'x-client-secret': CASHFREE_SECRET_ID
+            }
+        });
+
+        if (response.data.orderStatus === 'PAID') {
+            await appointmentModel.findByIdAndUpdate(orderId, { payment: true });
+            res.json({ success: true, message: "Payment Successful" });
+        } else {
+            res.json({ success: false, message: "Payment Failed or Pending" });
+        }
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+};
+
 
 // API to register user
 const registerUser = async (req, res) => {
@@ -354,5 +464,7 @@ export {
     paymentRazorpay,
     verifyRazorpay,
     paymentStripe,
-    verifyStripe
+    verifyStripe,
+    paymentCashfree,
+    verifyCashfree
 }
