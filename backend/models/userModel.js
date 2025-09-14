@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema({
     gender: { type: String, default: 'Not Selected' },
     dob: { type: String, default: 'Not Selected' },
     password: { type: String, required: true },
+    plan: { type: String, enum: ['free', 'premium'], default: 'free' },
 })
 
 const userModel = mongoose.models.user || mongoose.model("user", userSchema);

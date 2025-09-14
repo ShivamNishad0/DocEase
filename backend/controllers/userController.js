@@ -116,7 +116,7 @@ const verifyCashfree = async (req, res) => {
 const registerUser = async (req, res) => {
 
     try {
-        const { name, email, password } = req.body;
+        const { name, email, password, plan } = req.body;
 
         // checking for all data to register user
         if (!name || !email || !password) {
@@ -141,6 +141,7 @@ const registerUser = async (req, res) => {
             name,
             email,
             password: hashedPassword,
+            plan: plan || 'free',
         }
 
         const newUser = new userModel(userData)
@@ -227,12 +228,12 @@ const updateProfile = async (req, res) => {
     }
 }
 
-// API to book appointment 
+// API to book appointment
 const bookAppointment = async (req, res) => {
 
     try {
 
-        const { userId, docId, slotDate, slotTime } = req.body
+        const { userId, docId, slotDate, slotTime, videoCall } = req.body
         const docData = await doctorModel.findById(docId).select("-password")
 
         if (!docData.available) {
@@ -241,7 +242,7 @@ const bookAppointment = async (req, res) => {
 
         let slots_booked = docData.slots_booked
 
-        // checking for slot availablity 
+        // checking for slot availablity
         if (slots_booked[slotDate]) {
             if (slots_booked[slotDate].includes(slotTime)) {
                 return res.json({ success: false, message: 'Slot Not Available' })
@@ -258,15 +259,21 @@ const bookAppointment = async (req, res) => {
 
         delete docData.slots_booked
 
+        let amount = docData.fees
+        if (videoCall) {
+            amount += 500 // Additional charge for video call
+        }
+
         const appointmentData = {
             userId,
             docId,
             userData,
             docData,
-            amount: docData.fees,
+            amount,
             slotTime,
             slotDate,
-            date: Date.now()
+            date: Date.now(),
+            videoCall: videoCall || false
         }
 
         const newAppointment = new appointmentModel(appointmentData)

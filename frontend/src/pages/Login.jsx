@@ -9,6 +9,7 @@ const Login = () => {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [plan, setPlan] = useState('free')
   const [loading, setLoading] = useState(false)
 
   const navigate = useNavigate()
@@ -31,6 +32,7 @@ const Login = () => {
           name,
           email,
           password,
+          plan,
         })
         data = res.data
       } else {
@@ -95,6 +97,21 @@ const Login = () => {
             required
           />
         </div>
+
+        {state === 'Sign Up' && (
+          <div className='w-full'>
+            <p>Plan</p>
+            <select
+              onChange={(e) => setPlan(e.target.value)}
+              value={plan}
+              className='border border-[#DADADA] rounded w-full p-2 mt-1'
+              required
+            >
+              <option value='free'>Free</option>
+              <option value='premium'>Premium</option>
+            </select>
+          </div>
+        )}
 
         <button
           type='submit'

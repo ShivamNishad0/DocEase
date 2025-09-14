@@ -22,7 +22,7 @@ const Navbar = () => {
       <ul className='md:flex items-start gap-5 font-medium hidden'>
         <NavLink to='/' >
         <li className='py-1'>HOME</li>
-<hr className='border-none outline-none h-0.5 bg-orange-500 w-3/5 m-auto hidden' />
+          <hr className='border-none outline-none h-0.5 bg-orange-500 w-3/5 m-auto hidden' />
 
         </NavLink>
         <NavLink to='/doctors' >
@@ -47,8 +47,10 @@ const Navbar = () => {
               <img className='w-2.5' src={assets.dropdown_icon} alt="" />
               <div className='absolute top-0 right-0 pt-14 text-base font-medium text-gray-600 z-20 hidden group-hover:block'>
                 <div className='min-w-48 bg-gray-50 rounded flex flex-col gap-4 p-4'>
+                  <p className='text-gray-500 text-sm'>Plan: <span className='capitalize'>{userData.plan}</span></p>
                   <p onClick={() => navigate('/my-profile')} className='hover:text-black cursor-pointer'>My Profile</p>
                   <p onClick={() => navigate('/my-appointments')} className='hover:text-black cursor-pointer'>My Appointments</p>
+                  {userData.plan === 'premium' && <p onClick={() => navigate('/medicine-suggestion')} className='hover:text-black cursor-pointer'>Medicine Suggestion</p>}
                   <p onClick={logout} className='hover:text-black cursor-pointer'>Logout</p>
                 </div>
               </div>

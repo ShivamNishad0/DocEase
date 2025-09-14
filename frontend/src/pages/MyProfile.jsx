@@ -111,6 +111,9 @@ const MyProfile = () => {
                         : <p className='text-gray-500'>{userData.dob}</p>
                     }
 
+                    <p className='font-medium'>Plan:</p>
+                    <p className='text-gray-500 capitalize'>{userData.plan}</p>
+
                 </div>
             </div>
             <div className='mt-10'>

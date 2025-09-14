@@ -9,13 +9,14 @@ import { toast } from 'react-toastify'
 const Appointment = () => {
 
     const { docId } = useParams()
-    const { doctors, currencySymbol, backendUrl, token, getDoctosData } = useContext(AppContext)
+    const { doctors, currencySymbol, backendUrl, token, getDoctosData, userData } = useContext(AppContext)
     const daysOfWeek = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
 
     const [docInfo, setDocInfo] = useState(false)
     const [docSlots, setDocSlots] = useState([])
     const [slotIndex, setSlotIndex] = useState(0)
     const [slotTime, setSlotTime] = useState('')
+    const [videoCall, setVideoCall] = useState(false)
 
     const navigate = useNavigate()
 
@@ -196,6 +197,18 @@ const Appointment = () => {
                      
                     ))}
                 </div>
+
+                {userData && userData.plan === 'premium' && (
+                    <div className='flex items-center gap-2 mt-4'>
+                        <input
+                            type='checkbox'
+                            id='videoCall'
+                            checked={videoCall}
+                            onChange={(e) => setVideoCall(e.target.checked)}
+                        />
+                        <label htmlFor='videoCall' className='text-sm'>Request Video Call (+₹500)</label>
+                    </div>
+                )}
 
                 <button onClick={bookAppointment} className='bg-orange-500 text-white text-sm font-light px-20 py-3 rounded-full my-6
 '>Book an appointment</button>
