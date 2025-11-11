@@ -44,33 +44,40 @@ const paymentCashfree = async (req, res) => {
             customer_details: {
                 customer_id: appointmentData.userData._id.toString(),
                 customer_email: appointmentData.userData.email || "customer@example.com",
-                customer_phone: appointmentData.userData.phone || "9999999999"
+                customer_phone: (appointmentData.userData.phone && appointmentData.userData.phone !== '000000000' && /^\d{10}$/.test(appointmentData.userData.phone)) ? appointmentData.userData.phone : "9999999999"
             },
             order_meta: {
-                return_url: `${req.headers.origin}/verify-cashfree?appointmentId=${appointmentId}`,
-                notify_url: `${req.headers.origin}/api/payment-cashfree/notify`
+                return_url: `https://example.ngrok.io/verify-cashfree?appointmentId=${appointmentId}`,
+                notify_url: `https://example.ngrok.io/api/payment-cashfree/notify`
             }
         };
 
         const headers = {
             'Content-Type': 'application/json',
+            'x-api-version': '2022-09-01',
             'x-client-id': process.env.CASHFREE_APP_ID,
             'x-client-secret': process.env.CASHFREE_SECRET_ID
         };
 
         const response = await axios.post(`${apiUrl}/pg/orders`, orderPayload, { headers });
 
-        if (response.data && response.data.order_token) {
+        console.log('Cashfree payment response:', response.data);
+
+        if (response.data && response.data.payment_session_id) {
+            const paymentLink = process.env.CASHFREE_ENV === 'PROD'
+                ? `https://payments.cashfree.com/order/${response.data.payment_session_id}`
+                : `https://payments-test.cashfree.com/order/${response.data.payment_session_id}`;
+
             return res.json({
                 success: true,
                 orderId: response.data.order_id,
-                orderToken: response.data.order_token,
-                paymentLink: response.data.payment_link
+                paymentSessionId: response.data.payment_session_id,
+                paymentLink: paymentLink
             });
         } else {
             return res.json({
                 success: false,
-                message: response.data.message || "Order token not generated"
+                message: response.data.message || "Payment session not generated"
             });
         }
     } catch (error) {
@@ -91,10 +98,13 @@ const verifyCashfree = async (req, res) => {
         const response = await axios.get(`${apiUrl}/pg/orders/${orderId}`, {
             headers: {
                 'Content-Type': 'application/json',
+                'x-api-version': '2022-09-01',
                 'x-client-id': process.env.CASHFREE_APP_ID,
                 'x-client-secret': process.env.CASHFREE_SECRET_ID
             }
         });
+
+        console.log('Cashfree verify response:', response.data);
 
         const orderStatus = response.data.order_status;
 

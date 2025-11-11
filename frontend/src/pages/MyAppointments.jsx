@@ -121,9 +121,7 @@ const appointmentCashfree = async (appointmentId) => {
     try {
         const { data } = await axios.post(backendUrl + '/api/user/payment-cashfree', { appointmentId }, { headers: { token } })
         if (data.success) {
-            setCashfreeSessionId(data.sessionId || data.paymentLink || data.order?.paymentLink || data.order?.payment_url || data.order?.redirectUrl);
-            // Use sessionId or paymentLink for redirection
-            const paymentUrl = data.sessionId || data.paymentLink || data.order?.paymentLink || data.order?.payment_url || data.order?.redirectUrl;
+            const paymentUrl = data.paymentLink;
             if (paymentUrl) {
                 window.location.replace(paymentUrl);
             } else {
