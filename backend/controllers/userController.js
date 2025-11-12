@@ -65,8 +65,8 @@ const paymentCashfree = async (req, res) => {
 
         if (response.data && response.data.payment_session_id) {
             const paymentLink = process.env.CASHFREE_ENV === 'PROD'
-                ? `https://payments.cashfree.com/order/${response.data.payment_session_id}`
-                : `https://payments-test.cashfree.com/order/${response.data.payment_session_id}`;
+                ? `https://payments.cashfree.com/order/pg/orders/session?session_id=${response.data.payment_session_id}`
+                : `https://payments-test.cashfree.com/pg/orders/session?session_id=${response.data.payment_session_id}`;
 
             return res.json({
                 success: true,

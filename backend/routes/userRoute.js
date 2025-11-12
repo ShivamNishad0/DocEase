@@ -17,6 +17,8 @@ userRouter.post("/verifyRazorpay", authUser, verifyRazorpay)
 userRouter.post("/payment-stripe", authUser, paymentStripe)
 userRouter.post("/verifyStripe", authUser, verifyStripe)
 userRouter.post("/payment-cashfree", authUser, paymentCashfree)
-userRouter.post("/verifyCashfree", authUser, verifyCashfree)
+
+// Fixed GET route for Cashfree return_url redirect
+userRouter.get("/verify-cashfree", verifyCashfree)
 
 export default userRouter;
