@@ -17,7 +17,6 @@ const Chat = () => {
     const [loading, setLoading] = useState(true)
     const intervalRef = useRef(null)
 
-    // Get appointment details
     const getAppointmentDetails = async () => {
         try {
             const { data } = await axios.get(backendUrl + '/api/user/appointments', { headers: { token } })
@@ -34,7 +33,6 @@ const Chat = () => {
         }
     }
 
-    // Get messages
     const getMessages = async () => {
         try {
             const { data } = await axios.post(backendUrl + '/api/user/get-messages', { userId: userData._id, appointmentId }, { headers: { token } })
@@ -49,7 +47,6 @@ const Chat = () => {
         }
     }
 
-    // Send message
     const sendMessage = async () => {
         if (!newMessage.trim()) return
 
@@ -63,7 +60,7 @@ const Chat = () => {
 
             if (data.success) {
                 setNewMessage('')
-                getMessages() // Refresh messages
+                getMessages()
             } else {
                 toast.error(data.message)
             }
@@ -82,20 +79,16 @@ const Chat = () => {
     useEffect(() => {
         if (appointment) {
             getMessages()
-            // Clear existing interval
-            if (intervalRef.current) {
-                clearInterval(intervalRef.current)
-            }
-            // Poll for new messages every 3 seconds
+
+            if (intervalRef.current) clearInterval(intervalRef.current)
+
             intervalRef.current = setInterval(() => {
                 getMessages()
             }, 3000)
         }
-        // Cleanup on unmount or appointment change
+
         return () => {
-            if (intervalRef.current) {
-                clearInterval(intervalRef.current)
-            }
+            if (intervalRef.current) clearInterval(intervalRef.current)
         }
     }, [appointment])
 
@@ -130,7 +123,7 @@ const Chat = () => {
                         <div key={index} className={`mb-4 ${msg.senderType === 'user' ? 'text-right' : 'text-left'}`}>
                             <div className={`inline-block p-3 rounded-lg max-w-xs lg:max-w-md ${
                                 msg.senderType === 'user'
-                                    ? 'bg-primary text-white'
+                                    ? 'bg-orange-500 text-white'
                                     : 'bg-gray-200 text-gray-800'
                             }`}>
                                 <p>{msg.message}</p>
@@ -152,11 +145,11 @@ const Chat = () => {
                         onChange={(e) => setNewMessage(e.target.value)}
                         onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
                         placeholder="Type your message..."
-                        className='flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary'
+                        className='flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500'
                     />
                     <button
                         onClick={sendMessage}
-                        className='bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition-colors'
+                        className='bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors'
                     >
                         Send
                     </button>

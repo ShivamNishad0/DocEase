@@ -11,7 +11,6 @@ const DoctorMessages = () => {
     const [newMessage, setNewMessage] = useState('')
     const intervalRef = useRef(null)
 
-    // Get messages for selected appointment
     const getMessages = async (appointmentId) => {
         try {
             const { data } = await axios.post('http://localhost:4000/api/doctor/get-messages', {
@@ -28,7 +27,6 @@ const DoctorMessages = () => {
         }
     }
 
-    // Send message
     const sendMessage = async () => {
         if (!newMessage.trim() || !selectedAppointment) return
 
@@ -43,7 +41,7 @@ const DoctorMessages = () => {
 
             if (data.success) {
                 setNewMessage('')
-                getMessages(selectedAppointment) // Refresh messages
+                getMessages(selectedAppointment)
             } else {
                 toast.error(data.message)
             }
@@ -56,22 +54,17 @@ const DoctorMessages = () => {
     const handleAppointmentSelect = (appointmentId) => {
         setSelectedAppointment(appointmentId)
         getMessages(appointmentId)
-        // Clear existing interval
-        if (intervalRef.current) {
-            clearInterval(intervalRef.current)
-        }
-        // Poll for new messages every 3 seconds
+
+        if (intervalRef.current) clearInterval(intervalRef.current)
+
         intervalRef.current = setInterval(() => {
             getMessages(appointmentId)
         }, 3000)
     }
 
-    // Cleanup interval on unmount
     useEffect(() => {
         return () => {
-            if (intervalRef.current) {
-                clearInterval(intervalRef.current)
-            }
+            if (intervalRef.current) clearInterval(intervalRef.current)
         }
     }, [])
 
@@ -80,6 +73,7 @@ const DoctorMessages = () => {
             <p className='mb-3 text-lg font-medium'>Messages</p>
 
             <div className='flex gap-4'>
+                
                 {/* Appointments List */}
                 <div className='w-1/3 bg-white rounded-lg shadow-md p-4'>
                     <h3 className='text-md font-medium mb-4'>Appointments</h3>
@@ -90,7 +84,7 @@ const DoctorMessages = () => {
                                 onClick={() => handleAppointmentSelect(appointment._id)}
                                 className={`p-3 rounded-lg cursor-pointer transition-colors ${
                                     selectedAppointment === appointment._id
-                                        ? 'bg-primary text-white'
+                                        ? 'bg-orange-500 text-white'
                                         : 'bg-gray-50 hover:bg-gray-100'
                                 }`}
                             >
@@ -117,12 +111,17 @@ const DoctorMessages = () => {
                                     <p className='text-center text-gray-500'>No messages yet</p>
                                 ) : (
                                     messages.map((msg, index) => (
-                                        <div key={index} className={`mb-3 ${msg.senderType === 'doctor' ? 'text-right' : 'text-left'}`}>
-                                            <div className={`inline-block p-2 rounded-lg max-w-xs ${
-                                                msg.senderType === 'doctor'
-                                                    ? 'bg-primary text-white'
-                                                    : 'bg-gray-200 text-gray-800'
-                                            }`}>
+                                        <div
+                                            key={index}
+                                            className={`mb-3 ${msg.senderType === 'doctor' ? 'text-right' : 'text-left'}`}
+                                        >
+                                            <div
+                                                className={`inline-block p-2 rounded-lg max-w-xs ${
+                                                    msg.senderType === 'doctor'
+                                                        ? 'bg-orange-500 text-white'
+                                                        : 'bg-gray-200 text-gray-800'
+                                                }`}
+                                            >
                                                 <p className='text-sm'>{msg.message}</p>
                                                 <p className='text-xs mt-1 opacity-75'>
                                                     {new Date(msg.timestamp).toLocaleString()}
@@ -141,11 +140,11 @@ const DoctorMessages = () => {
                                     onChange={(e) => setNewMessage(e.target.value)}
                                     onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
                                     placeholder="Type your message..."
-                                    className='flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary'
+                                    className='flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
                                 />
                                 <button
                                     onClick={sendMessage}
-                                    className='bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition-colors'
+                                    className='bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors'
                                 >
                                     Send
                                 </button>
