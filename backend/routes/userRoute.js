@@ -1,5 +1,5 @@
 import express from 'express';
-import { loginUser, registerUser, getProfile, updateProfile, bookAppointment, listAppointment, cancelAppointment, paymentRazorpay, verifyRazorpay, paymentStripe, verifyStripe, paymentCashfree, verifyCashfree } from '../controllers/userController.js';
+import { loginUser, registerUser, getProfile, updateProfile, bookAppointment, listAppointment, cancelAppointment, paymentRazorpay, verifyRazorpay, paymentStripe, verifyStripe, paymentCashfree, verifyCashfree, sendMessage, getMessages } from '../controllers/userController.js';
 import upload from '../middleware/multer.js';
 import authUser from '../middleware/authUser.js';
 const userRouter = express.Router();
@@ -20,5 +20,8 @@ userRouter.post("/payment-cashfree", authUser, paymentCashfree)
 
 // Fixed GET route for Cashfree return_url redirect
 userRouter.get("/verify-cashfree", verifyCashfree)
+
+userRouter.post("/send-message", authUser, sendMessage)
+userRouter.post("/get-messages", authUser, getMessages)
 
 export default userRouter;

@@ -46,6 +46,10 @@ const Sidebar = () => {
           <img className='min-w-5' src={assets.appointment_icon} alt='' />
           <p className='hidden md:block'>Appointments</p>
         </NavLink>
+        <NavLink to={'/doctor-masseges'} className={({ isActive }) => `flex items-center gap-3 py-3.5 px-3 md:px-9 md:min-w-72 cursor-pointer ${isActive ? 'bg-orange-50 border-r-4 border-orange-500' : ''}`}>
+          <img className='w-7' src={assets.message_icon} alt='' />
+          <p className='hidden md:block'>Masseges</p>
+        </NavLink>
         <NavLink to={'/doctor-profile'} className={({ isActive }) => `flex items-center gap-3 py-3.5 px-3 md:px-9 md:min-w-72 cursor-pointer ${isActive ? 'bg-orange-50 border-r-4 border-orange-500' : ''}`}>
           <img className='min-w-5' src={assets.people_icon} alt='' />
           <p className='hidden md:block'>Profile</p>

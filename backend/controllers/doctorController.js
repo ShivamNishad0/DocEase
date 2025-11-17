@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import doctorModel from "../models/doctorModel.js";
 import appointmentModel from "../models/appointmentModel.js";
+import messageModel from "../models/messageModel.js";
 
 // API for doctor Login 
 const loginDoctor = async (req, res) => {
@@ -190,6 +191,62 @@ const doctorDashboard = async (req, res) => {
     }
 }
 
+// API to send message from doctor to user
+const sendMessageDoctor = async (req, res) => {
+    try {
+        const { docId, userId, message, appointmentId } = req.body;
+
+        if (!message || !appointmentId) {
+            return res.json({ success: false, message: 'Message and appointment ID are required' });
+        }
+
+        // Verify the appointment exists and belongs to the doctor
+        const appointment = await appointmentModel.findById(appointmentId);
+        if (!appointment || appointment.docId !== docId || appointment.userId !== userId) {
+            return res.json({ success: false, message: 'Invalid appointment' });
+        }
+
+        const newMessage = new messageModel({
+            senderId: docId,
+            receiverId: userId,
+            message,
+            appointmentId,
+            senderType: 'doctor'
+        });
+
+        await newMessage.save();
+        res.json({ success: true, message: 'Message sent successfully' });
+
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+};
+
+// API to get messages for a doctor
+const getMessagesDoctor = async (req, res) => {
+    try {
+        const { docId, appointmentId } = req.body;
+
+        if (!appointmentId) {
+            return res.json({ success: false, message: 'Appointment ID is required' });
+        }
+
+        // Verify the appointment belongs to the doctor
+        const appointment = await appointmentModel.findById(appointmentId);
+        if (!appointment || appointment.docId !== docId) {
+            return res.json({ success: false, message: 'Invalid appointment' });
+        }
+
+        const messages = await messageModel.find({ appointmentId }).sort({ timestamp: 1 });
+        res.json({ success: true, messages });
+
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+};
+
 export {
     loginDoctor,
     appointmentsDoctor,
@@ -199,5 +256,7 @@ export {
     appointmentComplete,
     doctorDashboard,
     doctorProfile,
-    updateDoctorProfile
+    updateDoctorProfile,
+    sendMessageDoctor,
+    getMessagesDoctor
 }

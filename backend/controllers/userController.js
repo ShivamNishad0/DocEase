@@ -4,6 +4,7 @@ import validator from "validator";
 import userModel from "../models/userModel.js";
 import doctorModel from "../models/doctorModel.js";
 import appointmentModel from "../models/appointmentModel.js";
+import messageModel from "../models/messageModel.js";
 import { v2 as cloudinary } from 'cloudinary'
 import stripe from "stripe";
 import razorpay from 'razorpay';
@@ -457,6 +458,62 @@ const verifyStripe = async (req, res) => {
 
 }
 
+// API to send message from user to doctor
+const sendMessage = async (req, res) => {
+    try {
+        const { userId, docId, message, appointmentId } = req.body;
+
+        if (!message || !appointmentId) {
+            return res.json({ success: false, message: 'Message and appointment ID are required' });
+        }
+
+        // Verify the appointment exists and belongs to the user
+        const appointment = await appointmentModel.findById(appointmentId);
+        if (!appointment || appointment.userId !== userId || appointment.docId !== docId) {
+            return res.json({ success: false, message: 'Invalid appointment' });
+        }
+
+        const newMessage = new messageModel({
+            senderId: userId,
+            receiverId: docId,
+            message,
+            appointmentId,
+            senderType: 'user'
+        });
+
+        await newMessage.save();
+        res.json({ success: true, message: 'Message sent successfully' });
+
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+};
+
+// API to get messages for a user
+const getMessages = async (req, res) => {
+    try {
+        const { userId, appointmentId } = req.body;
+
+        if (!appointmentId) {
+            return res.json({ success: false, message: 'Appointment ID is required' });
+        }
+
+        // Verify the appointment belongs to the user
+        const appointment = await appointmentModel.findById(appointmentId);
+        if (!appointment || appointment.userId !== userId) {
+            return res.json({ success: false, message: 'Invalid appointment' });
+        }
+
+        const messages = await messageModel.find({ appointmentId }).sort({ timestamp: 1 });
+        res.json({ success: true, messages });
+
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+};
+
 export {
     loginUser,
     registerUser,
@@ -470,5 +527,7 @@ export {
     paymentStripe,
     verifyStripe,
     paymentCashfree,
-    verifyCashfree
+    verifyCashfree,
+    sendMessage,
+    getMessages
 }
