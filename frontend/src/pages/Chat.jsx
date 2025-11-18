@@ -4,6 +4,7 @@ import { AppContext } from '../context/AppContext'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { assets } from '../assets/assets'
+import VideoCall from '../components/VideoCall'
 
 const Chat = () => {
 
@@ -134,6 +135,11 @@ const Chat = () => {
                         </div>
                     ))
                 )}
+            </div>
+
+            {/* Video Call */}
+            <div className='bg-white shadow-md rounded-lg p-4 mb-4'>
+                <VideoCall appointmentId={appointmentId} userType="user" />
             </div>
 
             {/* Message Input */}

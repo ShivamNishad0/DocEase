@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState, useRef } from 'react'
 import { DoctorContext } from '../../context/DoctorContext'
 import axios from 'axios'
 import { toast } from 'react-toastify'
+import VideoCall from '../../components/VideoCall'
 
 const DoctorMessages = () => {
 
@@ -131,6 +132,9 @@ const DoctorMessages = () => {
                                     ))
                                 )}
                             </div>
+
+                            {/* Video Call */}
+                            <VideoCall appointmentId={selectedAppointment} userType="doctor" />
 
                             {/* Message Input */}
                             <div className='flex gap-2'>
