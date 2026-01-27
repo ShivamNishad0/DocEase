@@ -8,12 +8,16 @@ import doctorRouter from "./routes/doctorRoute.js"
 import adminRouter from "./routes/adminRoute.js"
 import { Server } from 'socket.io'
 import http from 'http'
+import { Groq } from 'groq-sdk'
 
 // app config
 const app = express()
 const port = process.env.PORT || 4000
 connectDB()
 connectCloudinary()
+
+// Groq client setup
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 // middlewares
 app.use(express.json())
@@ -74,3 +78,35 @@ server.on('error', (error) => {
     console.error('Server error:', error);
   }
 });
+
+app.post("/api/chatbot", async (req, res) => {
+  try {
+    const { message } = req.body;
+
+    const prompt = `
+        You are a medical AI chatbot for DocEase.
+        User says symptoms. You must:
+
+        1. Detect disease + severity.
+        2. Classify as SAFE / HARMFUL / VERY HARMFUL.
+        3. If harmful → Recommend doctor consult.
+        4. Suggest doctor specialty (like Cardiologist, ENT, etc.)
+        5. Output friendly message (chat style).
+        
+        User message: ${message}
+    `;
+
+    const response = await groq.chat.completions.create({
+      model: "llama3-70b",
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.2,
+    });
+
+    const aiMessage = response.choices[0].message.content;
+
+    res.json({ reply: aiMessage });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
